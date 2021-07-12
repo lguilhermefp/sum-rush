@@ -11,7 +11,7 @@ class Game extends React.Component{
     };
 
     state = {
-        selectedNumbers: [],
+        selectedNumberIds: [],
     };
 
     randomNumbers = Array
@@ -24,26 +24,54 @@ class Game extends React.Component{
         //  TODO: shuffle the random numbers
 
     isNumberSelected = (numberIndex) => {
-        return this.state.selectedNumbers.indexOf(numberIndex) >= 0;
+        return this.state.selectedNumberIds.indexOf(numberIndex) >= 0;
     };
 
     selectNumber = (numberIndex) => {
         this.setState((prevState) => ({
-            selectedNumbers: prevState.selectedNumbers.concat(numberIndex),
+            selectedNumberIds: prevState.selectedNumberIds.concat(numberIndex),
         }));
     };
     
+    gameStatus = () => {
+        const sumSelected = this.state.selectedNumberIds.reduce((acc, current) => {
+            return acc + this.randomNumbers[current];
+        }, 0);
+        if(sumSelected < this.target){
+            return 'BEEN_PLAYED';
+        }
+        if(sumSelected == this.target){
+            return 'WON';
+        }
+        if(sumSelected > this.target){
+            return 'LOST';
+        }
+    }
+
+    targetPanelStyle = (gameStatus) => {
+        if(gameStatus == 'WON') {
+            return styles.won;
+        }
+        if(gameStatus == 'LOST') {
+            return styles.lost;
+        }
+    }
+
     render(){
+        const gameStatus = this.gameStatus();
         return(
             <View style={styles.container}>
-                <Text style={styles.target}>{this.target}</Text>
+                <Text style={[
+                    styles.target,
+                    styles[`STATUS_${gameStatus}`]
+                ]}>{this.target}</Text>
                 <View style={styles.randomContainer}>
                     {this.randomNumbers.map((randomNumber, index) =>
                         <RandomNumber
                             key={index}
                             id={index}
                             number={randomNumber}
-                            isDisabled={this.isNumberSelected(index)}
+                            isDisabled={this.isNumberSelected(index) || gameStatus !== 'BEEN_PLAYED'}
                             onPress={this.selectNumber}
                         />
                     )}
@@ -60,7 +88,7 @@ const styles = StyleSheet.create({
     },
     target: {
         fontSize: 50,
-        backgroundColor: '#bbb',
+        marginTop: 30,
         marginHorizontal: 50,
         textAlign: 'center',
     },
@@ -68,7 +96,16 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
+    },
+    STATUS_BEEN_PLAYED: {
+        backgroundColor: '#bbb',
+    },
+    STATUS_WON: {
+        backgroundColor: '#1c2',
+    },
+    STATUS_LOST: {
+        backgroundColor: '#b80000',
     },
 });
 
