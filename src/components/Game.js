@@ -10,6 +10,10 @@ class Game extends React.Component{
         randomNumberCount: PropTypes.number.isRequired,
     };
 
+    state = {
+        selectedNumbers: [0, 4],
+    };
+
     randomNumbers = Array
         .from({ length: this.props.randomNumberCount })
         .map(() => 1 + Math.floor(10 * Math.random()));
@@ -19,13 +23,21 @@ class Game extends React.Component{
         .reduce((acc, current) => acc + current, 0);
         //  TODO: shuffle the random numbers
 
+    isNumberSelected = (numberIndex) => {
+        return this.state.selectedNumbers.indexOf(numberIndex) >= 0;
+    }
+    
     render(){
         return(
             <View style={styles.container}>
                 <Text style={styles.target}>{this.target}</Text>
                 <View style={styles.randomContainer}>
                     {this.randomNumbers.map((randomNumber, index) =>
-                        <RandomNumber key={index} number={randomNumber} />
+                        <RandomNumber
+                            key={index}
+                            number={randomNumber}
+                            isSelected={this.isNumberSelected(index)}
+                        />
                     )}
                 </View>
             </View>
