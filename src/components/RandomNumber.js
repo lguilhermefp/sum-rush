@@ -13,13 +13,19 @@ class RandomNumber extends Component {
     }
 
     handlePress = () => {
+        if(this.props.isDisabled){
+            return;
+        }
         this.props.onPress(this.props.id);
     };
 
     render() {
         return (
             <TouchableOpacity onPress={this.handlePress}>
-                <Text style={[styles.random, this.props.isDisabled && styles.disabled]}>
+                <Text style={[
+                    styles.random,
+                    this.props.isDisabled && styles.disabled
+                ]}>
                     {this.props.number}
                 </Text>
             </TouchableOpacity>
